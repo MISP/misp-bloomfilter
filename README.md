@@ -1,8 +1,8 @@
 misp-bloomfilter
 ================
 
-misp-bloomfilter is a tool creating a bloomfilter from records in a MISP XML export.
-The created bloomfilter database can be then used to query logs files
+misp-bloomfilter is a tool creating a bloom filter from records in a MISP XML export.
+The created bloom filter database can be then used to query logs files
 without having to share the MISP database where the analysis
 is performed. This can be used as an alternative way to lookup IOCs without
 having to share these directly.
@@ -11,14 +11,14 @@ Requirements
 ------------
 
 * Python
-* pybloomfilter
+* pybloomfilter (https://github.com/axiak/pybloomfiltermmap/)
 
 Security Considerations
 -----------------------
 
-Be aware that you can check against a bloomfilter any finite
+Be aware that you can check against a bloom filter any finite
 set of data. Especially IP addresses (2^32) can be easily enumerated
-from a bloomfilter. If you are using bloomfilters to avoid sharing
+from a bloom filter. If you are using bloom filters to avoid sharing
 the records from MISP, you should verify if the set cannot be easily
 enumerated.
 
@@ -38,12 +38,12 @@ Usage
                                 lookup a value in a bloomfilter
           -s, --streamlookup    lookup a set of value from stdin in a bloomfilter
           -d DBDIR, --dbdir=DBDIR
-                                Bloomfilters directory (default is '.')
+                                Bloom filters db directory (default is '.')
 
 Example
 -------
 
-Creating a bloomfilter database from the domain record type:
+Creating a bloom filter database from the domain record type:
 
     python misp-bloomfilter.py -f ../in/misp.xml -d ../db/ -t domain
 
