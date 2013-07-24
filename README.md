@@ -39,6 +39,10 @@ Usage
           -s, --streamlookup    lookup a set of value from stdin in a bloomfilter
           -d DBDIR, --dbdir=DBDIR
                                 Bloomfilters directory (default is '.')
+          -u URL, --url=URL     url to access MISP
+          -a AUTHKEY, --authkey=AUTHKEY
+                                authentication key to access MISP
+
 
 Example
 -------
@@ -46,6 +50,10 @@ Example
 Creating a bloomfilter database from the domain record type:
 
     python misp-bloomfilter.py -f ../in/misp.xml -d ../db/ -t domain
+
+Creating a bloomfilter database from the ip-dst type using the REST MISP API:
+
+    python misp-bloomfilter.py -u https://misp.server/ -a <your auth key> -d ../db/ -t ip-dst
 
 Testing the database for the existence of a record:
 

@@ -17,6 +17,7 @@
 from optparse import OptionParser
 import sys
 import pybloomfilter
+import urllib2
 
 usage = "usage: %s url(s)" % sys.argv[0]
 parser = OptionParser(usage)
@@ -51,12 +52,21 @@ def log(message=None, type="debug"):
         return True
     return None
 
+def fetch(url=None, auth=None):
+    if url is None or auth is None:
+        return False
+    req = urllib2.Request(url+"/events/xml/"+auth)
+    r = urllib2.urlopen(req)
+    v = r.read()
+    return v
 
 parser.add_option("-t", "--type", dest="recordtype", help="type of the record (default record is 'domain')", default="domain")
 parser.add_option("-f", "--file", dest="filename", help="filename of the MISP XML file to read (default MISP XML dump is 'misp.xml')", default="misp.xml")
 parser.add_option("-l", "--lookup", dest="lookup", help="lookup a value in a bloomfilter", default=False)
 parser.add_option("-s", "--streamlookup", dest="streamlookup", help="lookup a set of value from stdin in a bloomfilter", default=False, action='store_true')
 parser.add_option("-d", "--dbdir", dest="dbdir", help="Bloomfilters directory (default is '.')", default=".")
+parser.add_option("-u", "--url", dest="url", help="url to access MISP", default=None)
+parser.add_option("-a", "--authkey", dest="authkey", help="authentication key to access MISP", default=None)
 
 (options, args) = parser.parse_args()
 
@@ -84,13 +94,16 @@ else:
     # found (TODO)
     bloomfilter = pybloomfilter.BloomFilter(10000, 0.01, bloomfile)
 
-tree = etree.parse(options.filename)
+if options.url is None or options.authkey is None:
+    tree = etree.parse(options.filename)
+else:
+    tree = etree.fromstring(fetch(url=options.url,auth=options.authkey))
 
 typematch = False
 for element in tree.iter():
    if element.tag == "type" and element.text == options.recordtype:
         typematch = True
-   if typematch and element.tag == "value1":
+   if typematch and element.tag == "value":
         bloomfilter.add(element.text)
         if element.text in bloomfilter:
             log(message=element.text+" added")
